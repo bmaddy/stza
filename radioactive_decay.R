@@ -1,24 +1,19 @@
 make_cup = function(n){
-  face = sample(1:6, n, replace = TRUE)
-  f = as.data.frame(face)
-  f$age = 0
-  f
+  sample(1:6, n, replace = TRUE)
 }
 
 remove = function(cup, n){
-  cup[cup$face != n,]
+  cup[cup != n]
 }
 
 shake = function(cup){
-  cup$face = sample(1:6, length(cup$face), replace = TRUE)
-  cup$age = cup$age + 1
-  cup
+  sample(1:6, length(cup), replace = TRUE)
 }
 
 experiment = function(cup){
-  remaining = cup()
-  while(length(cup$face) > 0){
-    remaining = append(remaining, length(cup$face))
+  remaining = c()
+  while(length(cup) > 0){
+    remaining = append(remaining, length(cup))
     cup = shake(cup)
     cup = remove(cup, 1)
   }

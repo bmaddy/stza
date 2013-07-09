@@ -2,12 +2,12 @@ make_cup = function(n){
   sample(1:6, n, replace = TRUE)
 }
 
-remove = function(cup, n){
-  cup[cup != n]
-}
-
 shake = function(cup){
   sample(1:6, length(cup), replace = TRUE)
+}
+
+remove = function(cup, n){
+  cup[cup != n]
 }
 
 experiment = function(cup){

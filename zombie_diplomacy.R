@@ -3,7 +3,7 @@ constants = data.frame(avg_stubbornness = 50,
                        quality = 75)
 
 make_zombies = function(deviation_range, n){
-  data.frame(deviation=sample(deviation_range, 200, replace = TRUE),
+  data.frame(deviation=sample(deviation_range, n, replace = TRUE),
              standing=FALSE)
 }
 

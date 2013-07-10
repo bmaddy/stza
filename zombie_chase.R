@@ -15,6 +15,7 @@ create_field = function(d = 300){
   return(field)
 }
 
+# sets x and y for the zombie
 add_zombie_location = function(field, x,y){
   field$x[field$player == "zombie"] = x
   field$y[field$player == "zombie"] = y
@@ -22,6 +23,14 @@ add_zombie_location = function(field, x,y){
   return(field)
 }
 
+# sets a random speed for the zombie within a range
+randomize_zombie_speed = function(field, speed_range){
+  field$v[field$player == "zombie"] = runif(1, speed_range[1], speed_range[2])
+  
+  return(field)
+}
+
+# sets zombie location and speed (within given ranges)
 random_zombie_location = function(field, xBounds, yBounds, speed_range = FALSE){#Bounds must be of the form c(smallest, largest)
   field$x[field$player == "zombie"] = runif(1, min = min(xBounds), max = max(xBounds))
   field$y[field$player == "zombie"] = runif(1, min = min(yBounds), max = max(yBounds))
@@ -31,16 +40,11 @@ random_zombie_location = function(field, xBounds, yBounds, speed_range = FALSE){
   return(field)
 }
 
+
 add_speeds = function(field, players, speeds){
   for (p in 1:length(players)){
     field$v[field$player == players[p]] = speeds[p]
   }
-  
-  return(field)
-}
-
-randomize_zombie_speed = function(field, speed_range){
-  field$v[field$player == "zombie"] = runif(1, speed_range[1], speed_range[2])
   
   return(field)
 }
@@ -197,7 +201,7 @@ animate_path = function(field, dt = 0.5){
   
   while(! safe(field) & ! catch(field)){
     field = move_both(field, dt)
-    plot(field$x[c(3,4)], field$y[c(3,4)], xlim = c(0,size), ylim = c(0,sie), col = c('red', 'black'), pch = c("h", "z"))
+    plot(field$x[c(3,4)], field$y[c(3,4)], xlim = c(0,size), ylim = c(0,size), col = c('red', 'black'), pch = c("h", "z"))
   }
   ani.stop()
 }

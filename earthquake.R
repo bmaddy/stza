@@ -1,8 +1,16 @@
+library("animation")
+
 ## Setup
 ########
 
-make_grid = function(n = 10){
-  land = matrix(data = 0, nrow = n, ncol = n)
+constants = data.frame(breaking_point = 10,
+                       distributed_stress = 8)
+
+make_land = function(constants, n = 10){
+  data = sample(0:(constants$breaking_point - 1),
+                n*n,
+                replace = TRUE)
+  land = matrix(data = data, nrow = n, ncol = n)
   land
 }
 
@@ -16,11 +24,11 @@ add_random_stress = function(land){
   land
 }
 
-collapse = function(land, x, y, breaking_point = 10){
-  land[x,y] > breaking_point
+collapse = function(land, x, y, breaking_point = 8){
+  land[x,y] >= breaking_point
 }
 
-distribute_moore = function(land, x, y, stress_distributed = 6){
+distribute_moore = function(land, x, y){
   for(dx in -1:1){
     for(dy in -1:1){
       middle = dx == 0 & dy == 0
@@ -36,31 +44,58 @@ distribute_moore = function(land, x, y, stress_distributed = 6){
 
 collapse_and_distribute_all = function(land){
   result = land
+  collapse_count = 0
   for(x in 1:ncol(land)){
     for(y in 1:nrow(land)){
       if(collapse(land,x,y)){
-        result[x,y] = land[x,y] - 11
+        collapse_count = collapse_count + 1
+        result[x,y] = land[x,y] - 8
         result = distribute_moore(result, x, y)
       }
     }
   }
-  result
+  list(land = result, collapse_count = collapse_count)
 }
 
-count_collapsors = function(land){
-  
-}
 
 ## Iterate
 ##########
 
 propagate = function(land, n, make_plot = FALSE, stress_rate = 1){
+  collapses = c()
   for(i in 1:n){
     for(j in 1:stress_rate){land = add_random_stress(land)}
-    land = collapse_and_distribute_all(land)
+    collapsed = collapse_and_distribute_all(land)
+    land = collapsed$land
+    collapses = append(collapses, collapsed$collapse_count)
     if(make_plot){plot_state(land)}
   }
-  land
+  list(land = land, collapses = collapses)
+}
+
+## Stress and propagate separately method
+#########################################
+
+propagate_all = function(land, breaking_point = 10){
+  collapse_count = 0
+  while(max(land) > breaking_point){
+    collapse_data = collapse_and_distribute_all(land)
+    collapse_count = collapse_count + collapse_data$collapse_count
+    land = collapse_data$land
+  }
+  list(land = land, collapse_count = collapse_count)
+}
+
+stress_then_propagate = function(land, n, make_plot = FALSE, stress_rate = 1){
+  collapses = c()
+  for(i in 1:n){
+    for(j in 1:stress_rate){land = add_random_stress(land)}
+    propagated = propagate_all(land)
+    land = propagated$land
+    collapses = append(collapses, propagated$collapse_count)
+    if(make_plot){plot_state(land)}
+  }
+  list(land = land, collapses = collapses)
 }
 
 ## Report
@@ -78,6 +113,11 @@ plot_state = function(land){
 plot_state_over_time = function(land, n){
   ani.options(interval = 0.1)
   ani.start()
-  propagate(land, n, TRUE, 15)
+  #result = propagate(land, n, TRUE, 15)
+  result = stress_then_propagate(land, n, TRUE, 15)
   ani.stop()
+  result
 }
+
+# land = make_grid(50)
+# result = plot_state_over_time(land, 500)

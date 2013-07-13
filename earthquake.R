@@ -105,3 +105,4 @@ plot_state_over_time = function(constants, land, n){
 
 # land = make_land(constants, 50)
 # result = plot_state_over_time(land, 500)
+# plot_state_over_time(density(result$collapses))

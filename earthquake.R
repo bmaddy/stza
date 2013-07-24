@@ -107,3 +107,8 @@ plot_state_over_time = function(constants, land, n){
   ani.stop()
   result
 }
+
+# usage
+# land = make_land(10)
+# result = plot_state_over_time(constants, land, 200)
+# plot(1:length(result$collapses), result$collapses, type = 'l')
